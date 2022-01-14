@@ -1,0 +1,37 @@
+version: "3.2"
+services:
+
+  apache:
+    build:
+      context: './apache/'
+    depends_on:
+      - mysql
+    networks:
+      - frontend
+      - backend
+    ports:
+      - "71:80"
+    volumes:
+      - ${PROJECT_ROOT}/:/var/www/html/
+    container_name: dcloud_apache_2
+
+  mysql:
+    platform: linux/amd64
+    image: mysql:${MYSQL_VERSION:-latest}
+    restart: always
+    ports:
+      - "13306:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    networks:
+      - backend
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${DB_NAME}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+    container_name: dcloud_mysql_2
+
+networks:
+  frontend:
+  backend:
